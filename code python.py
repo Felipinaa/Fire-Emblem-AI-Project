@@ -1,15 +1,3 @@
-## Présentation du programme ##
-
-#But du programme : pouvoir répliquer les conditions du jeu de manière simple, et de pouvoir y jouer.
-
-#On va donc modéliser le plateau par une matrice d'entiers. Les cases libres seront modélisés par des 0, et les unités par un entier positif non nul.
-#Le système de tour marche de la suivante : le joueur peut déplacer chaque unité sur 1 case dans les 4 directions possibles. Puis, s'il y a une unité ennemi sur les 4 cases autour de lui après avoir bougé, il pourra l'attaquer, ce qui lui fera perdre 1 PV.
-#Par rapport aux PV, ils correspondent aux entiers positifs définissant l'unité. Si l'unité se fait attaquer quand elle a un 1 PV, elle devient ainsi une case vide.
-
-#On va donc créer un système de tour : quand c'est le tour du joueur 1, il pourra donc accéder à chaque unité, puis décider de la mouvoir ou non, et si elle attaque ou non. Puis, quand le joueur aura fini son tour, il pourra mettre une commande pour passer au tour suivant.
-#Le jeu se finit quand un des deux camps n'a plus aucune unité active, ou s'il décide d'abandonner. Le jeu affichera ainsi le vainqueur.
-
-##Programme##
 from numpy import *
 
 #Création de la carte :
