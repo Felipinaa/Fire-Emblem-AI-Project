@@ -31,12 +31,15 @@ pr3= unit(3,[0,2],"pr3")
 pr4= unit(3,[0,3],"pr4")
 pr5= unit(3,[0,4],"pr5")
 
-
+#Sert à accéder aux unités à travers un dictionnaire pour pouvoir les appeler avec la user input.
 red_units=[pr1,pr2,pr3,pr4,pr5]
+red_dico = {"r"+str(i): red_units[i] for i in range(len(red_units)} 
 blue_units=[pb1,pb2,pb3,pb4,pb5]
+blue_dico = {"b"+str(i): blue_units[i] for i in range(len(blue_units)} 
 all_units= red_units + blue_units
-
-#Positionnement sur le terpr1rain :
+all_dico = blue_dico | red_dico 
+ 
+#Positionnement sur le terrain :
 
 def empty_map():
     global map
@@ -75,56 +78,95 @@ def move(unit,dir):
             return "invalid move : other unit here"
     unit.pos = prov_pos
 
-def attack(ally,ennemy):
-    global possible_units
-    if ennemy in possible_units :
-        ennemy.hp -= ally.attack
-    else:
-        return "can't attack this unit"
+#Fonction en réalité inutile ?
+#def attack(ally,enemy):
+#    global possible_units
+#    if enemy in possible_units :
+#        enemy.hp -= ally.attack
+#    else:
+#        return "can't attack this unit"
 
-#Fonctions concernant le déroulement:
+#Fonctions concernant le déroulement :
 
 def forfeit():
-   global ennemy_units, end_counter
+   global enemy_units, end_counter
    end_counter = 1
+
+def possible_action(units, case, action="move"):
+    global i,j #rappel : nombre de lignes et de colonnes
+    x,y = case
+    units_pos = [x.pos for x in units]
+    if action == "move":
+        return ( case not in units_pos ) and ( x>=0 and x<=i and y>=0 and y<=j )
+    else :
+        return case in units_pos
+
+def get_unit_from_nb(units,nb):
+    units_nb = [x.nb for x in units]
+    unit_index = units_nb.index(nb)
+    return  units[unit_index]  # car les listes sont crées par le même parcours.
+
+def get_unit_from_pos(units,position):
+    units_pos = [x.pos for x in units]
+    unit_index = units_pos.index(position)
+    return units[unit_index] #de même que pour la fonction précédente.
 
 #Déroulement d'un tour :
 
-#Les listes dépendront des tour : on associera au nombre de tour modulo 2 pour savoir quel équipe joue.
+#Les listes dépendront des tours : on associera au nombre de tours modulo 2 pour savoir quelle équipe joue.
 
-ennemy_unit=[]
+enemy_unit=[]
 ally_unit=[]
 end_counter=0
 nb_turn=0
+
 while end_counter == 0 :
+    #Initialisation du jeu/de chaque tour : 
     nb_turn+=1
     #Précise qui joue et fait boucle uniquement par rapport aux unités "ennemis/alliés"
     if nb_turn%2 == 1 :
         ally_unit= blue_units
-        ennemy_unit= red_units
+        enemy_unit= red_units
     else :
         ally_unit = red_units
-        ennemy_unit = blue_unit
+        enemy_unit = blue_units
     ally_name = [x.nb for x in ally_unit]
-    while ally_unit !=[]:
-        print(ally_name)
-        char = input("choose which unit to move : ")
-        while char not in ally_name :
-            char=input("impossible to play, choose another : ")
+
+    #Choix du personnage à bouger
+    while ally_unit :
+        print("curent units :",ally_name)
+        char_name = input("choose which unit to move : ")
+        while not (char_name in ally_name or  char_name not in ["skip turn", "surrender"]) :
+            char_name=input("impossible to play, choose another : ")
+        if char_name == "skip turn":
+            ally_unit = []
+        if char_name == "surrender":
+            end_counter += 1
+        char = all_dico[char_name] 
+
+    #Choix de l'action à faire
         attack_counter = 0
         move_counter = 0
         #Compte les actions réalisés en considérant que seules 2 actions possibles
-        #Les input doivent contenir l'action et la position de l'action concerné
+        #Les inputs doivent contenir l'action et la position de l'action concernée
         while attack_counter == 0 :
             if move_counter == 1 :
-                action, direction = input("possibility : attack, skip turn")
-                while action != "attack" or action != "skip":
-                    action,direction = input("fool test")
+                action,place = input("possibility : attack, skip unit turn(skip)") #place correspond à l'emplacement où l'action va agir
+                while action not in ["attack","skip"]:
+                    action,place = input("fool test")
             else :
-                action, direction = input("possibility : attack, move, skip turn")
+                action, place = input("possibility : attack, move, skip turn")
+                while action not in ["attack","skip","move"]:
+                    action,place = input("fool test")
+                    
+            #Déroulement de l'action  
             if action == "move":
-                unit_pos = [x.pos for x in all_units]
-                if direction in unit_pos :
-                    action = input("can't move there, choose again:")
-
-
+                while not possible_action(all_units, place, action):
+                    action, place = input("can't move there, choose again:")
+                char.pos = place 
+            elif action == "attack":
+                while not possible_action(enemy_unit, place, action) or possible_action(ally_unit, place, action):
+                    action = input("no enemy units there/presence of ally units, choose again :")
+                enemy_dico_pos = {enemy_unit[i].pos = enemy_unit[i] for i in range(len(enemy_unit))} #Permet d'accéder aux unités par leur position 
+                enemy = enemy_dico_pos[place] #accède à l'unité voulue dont on veut enlever les PV
+                enemy.hp -= char.attack
