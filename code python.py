@@ -33,9 +33,9 @@ pr5= unit(3,[0,4],"pr5")
 
 #Sert à accéder aux unités à travers un dictionnaire pour pouvoir les appeler avec la user input.
 red_units=[pr1,pr2,pr3,pr4,pr5]
-red_dico = {"r"+str(i): red_units[i] for i in range(len(red_units)} 
+red_dico = {"r"+str(i): red_units[i] for i in range(len(red_units))}
 blue_units=[pb1,pb2,pb3,pb4,pb5]
-blue_dico = {"b"+str(i): blue_units[i] for i in range(len(blue_units)} 
+blue_dico = {"b"+str(i): blue_units[i] for i in range(len(blue_units))}
 all_units= red_units + blue_units
 all_dico = blue_dico | red_dico 
  
@@ -167,6 +167,5 @@ while end_counter == 0 :
             elif action == "attack":
                 while not possible_action(enemy_unit, place, action) or possible_action(ally_unit, place, action):
                     action = input("no enemy units there/presence of ally units, choose again :")
-                enemy_dico_pos = {enemy_unit[i].pos = enemy_unit[i] for i in range(len(enemy_unit))} #Permet d'accéder aux unités par leur position 
+                enemy_dico_pos = { enemy_unit[i].pos = enemy_unit[i] for i in range(len(enemy_unit)) }  #Permet d'accéder aux unités par leur position
                 enemy = enemy_dico_pos[place] #accède à l'unité voulue dont on veut enlever les PV
-                enemy.hp -= char.attack
