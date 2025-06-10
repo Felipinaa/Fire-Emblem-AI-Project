@@ -1,10 +1,10 @@
-import array
+from array import array
 
 # Création de la carte :
-# On considère une map carrée :
+# On considère une _map carrée :
 j = 5  # Nombre de colonnes
 i = 5  # Nombre de lignes
-map = array([[0]*i]*j)
+_map = array('b')
 
 # Création des unités :
 # On passera par un dictionnaire de dictionnaire pour chaque camp :
@@ -17,27 +17,27 @@ map = array([[0]*i]*j)
 # et les unitées rouges en bas :
 
 blue_units = {"b" + str(i):
-                {"HP": 3, "position": [0, i], "attack": 1, "move": 1, "range": 1}
-                  for i in range(5)}
+              {"HP": 3, "position": [0, i], "attack": 1, "move": 1, "range": 1}
+              for i in range(5)}
 red_units = {"r" + str(i):
-                {"HP": 3, "position": [4, i], "attack": 1, "move": 1, "range": 1}
-                for i in range(5)}
+             {"HP": 3, "position": [4, i], "attack": 1, "move": 1, "range": 1}
+             for i in range(5)}
 all_units = blue_units | red_units
 
 # Fonctions concernant l'affichage :
 
 
 def empty_map():
-    global map
-    map = array([[0]*i]*j)
+    global _map
+    _map = [[0]*i]*j
 
 
 def hp_maprefresh(L):
-    global map
+    global _map
     empty_map()
     for unit in L:
         hp, pos = unit["HP"], unit["position"]
-        map[pos[0]][pos[1]] += hp
+        _map[pos[0]][pos[1]] += hp
 
 # Actions concernant les unités :
 
@@ -47,8 +47,10 @@ def in_bounds(pos):  # Sert à voir si la position existe
 
 
 def move_possibility(unit_pos, wideness):
-    possible_pos = [unit_pos]  # Contient toutes les positions possibles.
-    pos_to_check = [unit_pos]  # File servant à analyser positions où peut aller
+    # Contient toutes les positions possibles.
+    possible_pos = [unit_pos]
+    # File servant à analyser positions où peut aller
+    pos_to_check = [unit_pos]
     global all_units
     all_units_pos = [all_units[i]["position"] for i in range(len(all_units))]
     while wideness > 0:
@@ -63,7 +65,7 @@ def move_possibility(unit_pos, wideness):
                         [to_check[0], to_check[1]+1],
                         [to_check[0], to_check[1]-1]]
             for pos in neighbor:
-                if pos in possible_pos and in_bounds(pos) and pos not in all_units_pos and pos not in possible_pos:
+                if in_bounds(pos) and pos in possible_pos and pos not in all_units_pos:
                     pos_to_check.append(pos)
                     possible_pos.append(pos)
                     # Permet de ne pas répéter de minimiser le nombre de checks
