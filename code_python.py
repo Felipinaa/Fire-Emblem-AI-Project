@@ -106,7 +106,7 @@ def attack(char_name):
     in_range_enemies = attack_possibility(unit_place, enemy_units, attack_range)
     enemies_with_hp = [(unit, all_units[unit]['HP']) for unit in in_range_enemies]
     all_units[input(
-        "possible enemy to attack:", *enemies_with_hp, sep=" "
+        "possible enemy to attack : ", *enemies_with_hp, sep=" "
     )]['HP'] -= damage
     attack_counter += 1
 
@@ -121,7 +121,7 @@ def move(char_name):
         _map[case[0]][case[1]] = 'X'
     # On accède à all_units pour véritablement changer les stats de l'unité
     all_units[char_name]['position'] = input(
-        "possible places to move : X cases")
+        "possible places to move (X cases) : ")
     move_counter += 1
 
 # Déroulement du tour :
@@ -156,7 +156,7 @@ while end_counter != 1:
         # Choix de l'unité :
         map_actualisation()
         print("current/available units:", *ally_units, sep=" ")
-        char_name = input("choose unit, skip turn (write skip) or surrender")
+        char_name = input("choose unit, skip turn (write skip) or surrender : ")
         if char_name == "skip":
             ally_units = []
             break
@@ -172,7 +172,7 @@ while end_counter != 1:
             while attack_counter == 0:  # Après avoir attaqué, l'unité ne peut plus rien faire.
                 if move_counter == 0:
                     map_actualisation()
-                    action = input("possibility : attack, move, skip")
+                    action = input("possibility : attack, move, skip : ")
                     if action == "skip":
                         attack_counter += 1
                     elif action == "move":
@@ -201,4 +201,3 @@ if blue_winner:
     print("Blue won in ", nb_turn)
 else:
     print("Red won in ", nb_turn)
-
