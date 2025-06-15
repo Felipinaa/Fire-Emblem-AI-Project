@@ -1,10 +1,38 @@
-from array import array
+# Modules utilisés :
+import json
 
 # Création de la carte :
-# On considère une _map carrée :
-j = 5  # Nombre de colonnes
-i = 5  # Nombre de lignes
-_map = array('b')
+
+with open('map.json', 'r') as file:
+    tiles = json.load(file)
+
+all_zones = []
+for values in tiles.values():
+    all_zones = all_zones + values
+
+# Correspond aux nombres de lignes et de colonnes totaux.
+i = max([all_zones[lin][0] for lin in range(len(all_zones))])+1  # Lignes
+j = max([all_zones[c][1] for c in range(len(all_zones))])+1  # Colonnes
+
+_map = [['__' for lin in range(i)] for col in range(j)]
+
+def map_actualisation():
+    global _map, all_units
+    # Vide la map pour mieux actualiser les hp (anciennement empty_map)
+    for lin in range(i):
+        for col in range(j):
+            if [lin, col] in tiles["free zone"]:
+                _map[lin][col] = '__'
+            # Le elif est là pour signifier la présence de cases spéciales.
+            elif [lin, col] in tiles["blocked zone"]:
+                _map[lin][col] = '//'
+    # Actualise le nom des unités sur chaque case
+    for unit in all_units:
+        name, pos = unit, all_units[unit]['position']
+        _map[pos[0]][pos[1]] = name
+    # Affiche la map :
+    for line in _map:
+        print(line)
 
 # Création des unités :
 # On passera par un dictionnaire de dictionnaire pour chaque camp :
@@ -24,29 +52,11 @@ red_units = {"r" + str(i):
              for i in range(5)}
 all_units = blue_units | red_units
 
-
-# Fonctions concernant l'affichage :
-
-
-# Vu qu'on a besoin d'utiliser en réalité toutes les fonctions mais
-# en même temps, on créé une fonction les combinant toutes en une seule.
-def map_actualisation():
-    global _map, all_units
-    # Vide la map pour mieux actualiser les hp (anciennement empty_map)
-    _map = [['__' for q in range(i)] for k in range(j)]
-    # Actualise le nom des unités sur chaque case
-    for unit in all_units:
-        name, pos = unit, all_units[unit]['position']
-        _map[pos[0]][pos[1]] = name
-    # Affiche la map : on ne passe par "array" car ne marche pas ?
-    for line in _map:
-        print(line)
-
 # Actions concernant les unités :
 
 
 def in_bounds(pos):  # Sert à voir si la position existe
-    return (pos[0] >= 0 and pos[0] < i) and (pos[1] >= 0 and pos[1] < j)
+    return ((pos[0] >= 0 and pos[0] < i) and (pos[1] >= 0 and pos[1] < j)) and pos not in tiles["blocked zone"]
 
 
 def move_possibility(unit_pos, wideness):
@@ -233,6 +243,6 @@ if surrender == 1:
         blue_winner = True
 
 if blue_winner:
-    print("Blue won in ", nb_turn)
+    print("Blue won in", nb_turn)
 elif red_winner:
-    print("Red won in ", nb_turn)
+    print("Red won in", nb_turn)
