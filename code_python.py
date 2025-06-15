@@ -24,6 +24,7 @@ red_units = {"r" + str(i):
              for i in range(5)}
 all_units = blue_units | red_units
 
+
 # Fonctions concernant l'affichage :
 
 
@@ -32,7 +33,7 @@ all_units = blue_units | red_units
 def map_actualisation():
     global _map, all_units
     # Vide la map pour mieux actualiser les hp (anciennement empty_map)
-    _map = [[0 for q in range(i)] for k in range(j)]
+    _map = [['__' for q in range(i)] for k in range(j)]
     # Actualise le nom des unités sur chaque case
     for unit in all_units:
         name, pos = unit, all_units[unit]['position']
@@ -77,6 +78,7 @@ def move_possibility(unit_pos, wideness):
 
 
 def attack_possibility(unit_pos, enemy_units, range):
+    global all_units
     # Très similaire à move possibility
     near_pos = []  # regarde toutes les cases pouvant être atteintes
     pos_to_check = [unit_pos]
@@ -95,33 +97,35 @@ def attack_possibility(unit_pos, enemy_units, range):
                     near_pos.append(pos)
         check_counter -= 1
     # renvoie la liste des unités pouvant être attaquées.
-    return [unit for unit in enemy_units if enemy_units[unit]['position'] in near_pos]
+    return [unit for unit in enemy_units if all_units[unit[0]]['position'] in near_pos]
 
 
 def attack(char_name):
     global enemy_units, all_units, attack_counter, unit_place
     # Pour unit_place, sert uniquement à éviter de refaire un call pour le réobtenir
-    attack_range = ally_units[char_name]['range']
-    damage = ally_units[char_name]['attack']
+    attack_range = all_units[char_name]['range']
+    damage = all_units[char_name]['attack']
     in_range_enemies = attack_possibility(unit_place, enemy_units, attack_range)
-    enemies_with_hp = [(unit, all_units[unit]['HP']) for unit in in_range_enemies]
-    all_units[input(
-        "possible enemy to attack : ", *enemies_with_hp, sep=" "
-    )]['HP'] -= damage
+    print("possible enemy to attack : ", *in_range_enemies, sep=" ")
+    to_attack = input()
+    all_units[to_attack]['HP'] -= damage
     attack_counter += 1
 
 
 def move(char_name):
     global ally_units, all_units, move_counter
-    move_range = ally_units[char_name]['move']
+    move_range = all_units[char_name]['move']
     possible_moves = move_possibility(unit_place, move_range)
     # On montre les cases pouvant être choisies par un X
     # Plutôt que de simplement print la liste des cases possibles.
     for case in possible_moves:
         _map[case[0]][case[1]] = 'X'
+    for line in _map:
+        print(line)
     # On accède à all_units pour véritablement changer les stats de l'unité
-    all_units[char_name]['position'] = input(
+    place = input(
         "possible places to move (X cases) : ")
+    all_units[char_name]['position'] = [int(place[0]),int(place[2])]
     move_counter += 1
 
 # Déroulement du tour :
@@ -130,6 +134,8 @@ def move(char_name):
 
 end_counter = 0
 nb_turn = 0
+# On passe par une variable surrender car quitter la boucle avec un break ne change pas les valeurs ?
+surrender = 0
 
 # Boucle principale :
 # Manque plus qu'à show map plus souvent
@@ -161,6 +167,7 @@ while end_counter != 1:
             ally_units = []
             break
         elif char_name == "surrender":
+            surrender += 1
             end_counter += 1
             break  # Breaks nécessaires pour ne pas exécuter le reste de la boucle
         else:
@@ -177,16 +184,17 @@ while end_counter != 1:
                         attack_counter += 1
                     elif action == "move":
                         move(char_name)
+                        map_actualisation()
                     else:  # Cas de l'attaque
                         attack(char_name)
                 else:  # Quand move_counter == 1
-                    action = input("possibility: attack, skip")
+                    action = input("possibility: attack, skip : ")
                     if action == "skip":
                         attack_counter += 1
                     else:  # Nécessairement attack
                         attack(char_name)
         # Enlève l'unité des unités jouables :
-        ally_units.remove(char_name)
+        ally_units.remove((char_name,all_units[char_name]['HP']))
     # Analyse des HP des unités :
     blue_units_hp = [blue_units[unit]['HP'] for unit in blue_units]
     red_units_hp = [red_units[unit]['HP'] for unit in red_units]
@@ -197,7 +205,13 @@ while end_counter != 1:
         end_counter += 1
 
 # Fin de la partie :
+if surrender == 1 :
+    if nb_turn % 2 == 1 :
+        red_winner = True
+    else :
+        blue_winner = True
+
 if blue_winner:
     print("Blue won in ", nb_turn)
-else:
+elif red_winner:
     print("Red won in ", nb_turn)
