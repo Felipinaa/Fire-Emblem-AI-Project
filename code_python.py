@@ -106,15 +106,21 @@ def attack(char_name):
     attack_range = all_units[char_name]['range']
     damage = all_units[char_name]['attack']
     in_range_enemies = attack_possibility(unit_place, enemy_units, attack_range)
-    print("possible enemy to attack : ", *in_range_enemies, sep=" ")
-    to_attack = input()
-    all_units[to_attack]['HP'] -= damage
-    attack_counter += 1
+    if not in_range_enemies:
+        print("can attack nobody.")
+    else:
+        print("possible enemy to attack : ", *in_range_enemies, sep=" ")
+        to_attack = input()
+        while to_attack not in [unit[0] for unit in in_range_enemies]:
+            to_attack = input("wrong unit, choose again : ")
+        all_units[to_attack]['HP'] -= damage
+        attack_counter += 1
 
 
 def move(char_name):
     global ally_units, all_units, move_counter
     move_range = all_units[char_name]['move']
+    # possible_moves est forcément non-vide car contient la case de l'unité.
     possible_moves = move_possibility(unit_place, move_range)
     # On montre les cases pouvant être choisies par un X
     # Plutôt que de simplement print la liste des cases possibles.
@@ -123,9 +129,13 @@ def move(char_name):
     for line in _map:
         print(line)
     # On accède à all_units pour véritablement changer les stats de l'unité
-    place = input(
+    str_place = input(
         "possible places to move (X cases) : ")
-    all_units[char_name]['position'] = [int(place[0]),int(place[2])]
+    int_place = [int(str_place[0]), int(str_place[2])]
+    while int_place not in possible_moves:
+        str_place = input("can't move there, choose again : ")
+    int_place = [int(str_place[0]), int(str_place[2])]  # Aie répétition bof
+    all_units[char_name]['position'] = int_place
     move_counter += 1
 
 # Déroulement du tour :
@@ -150,19 +160,25 @@ while end_counter != 1:
     if nb_turn % 2 == 1:
         ally_units = [(unit, blue_units[unit]['HP'])
                       for unit in blue_units if blue_units[unit]['HP'] != 0]
+        ally_names = [unit[0] for unit in ally_units]
         enemy_units = [(unit, red_units[unit]['HP'])
                        for unit in red_units if red_units[unit]['HP'] != 0]
+        enemy_names = [unit[0] for unit in enemy_units]
     else:
         ally_units = [(unit, red_units[unit]['HP'])
                       for unit in red_units if red_units[unit]['HP'] != 0]
+        ally_names = [unit[0] for unit in ally_units]
         enemy_units = [(unit, blue_units[unit]['HP'])
                        for unit in blue_units if blue_units[unit]['HP'] != 0]
+        enemy_names = [unit[0] for unit in enemy_units]
     # Début du tour :
     while ally_units:
         # Choix de l'unité :
         map_actualisation()
         print("current/available units:", *ally_units, sep=" ")
         char_name = input("choose unit, skip turn (write skip) or surrender : ")
+        while not ((char_name in ally_names) or (char_name in ["skip", "surrender"])):
+            char_name = input("can't choose unit, choose again : ")
         if char_name == "skip":
             ally_units = []
             break
@@ -180,6 +196,8 @@ while end_counter != 1:
                 if move_counter == 0:
                     map_actualisation()
                     action = input("possibility : attack, move, skip : ")
+                    while action not in ["attack", "move", "skip"]:
+                        action = input("impossible action, choose again : ")
                     if action == "skip":
                         attack_counter += 1
                     elif action == "move":
@@ -189,12 +207,14 @@ while end_counter != 1:
                         attack(char_name)
                 else:  # Quand move_counter == 1
                     action = input("possibility: attack, skip : ")
+                    while action not in ["attack", "skip"]:
+                        action = input("impossible action, choose again : ")
                     if action == "skip":
                         attack_counter += 1
                     else:  # Nécessairement attack
                         attack(char_name)
         # Enlève l'unité des unités jouables :
-        ally_units.remove((char_name,all_units[char_name]['HP']))
+        ally_units.remove((char_name, all_units[char_name]['HP']))
     # Analyse des HP des unités :
     blue_units_hp = [blue_units[unit]['HP'] for unit in blue_units]
     red_units_hp = [red_units[unit]['HP'] for unit in red_units]
@@ -205,10 +225,11 @@ while end_counter != 1:
         end_counter += 1
 
 # Fin de la partie :
-if surrender == 1 :
-    if nb_turn % 2 == 1 :
+
+if surrender == 1:
+    if nb_turn % 2 == 1:
         red_winner = True
-    else :
+    else:
         blue_winner = True
 
 if blue_winner:
