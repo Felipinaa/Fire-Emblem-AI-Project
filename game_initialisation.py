@@ -27,6 +27,7 @@ with open('units.json', 'r') as file:
 ### Fonctions :
 ## Fonctions concernant la carte :
 
+
 def map_actualisation():
     global _map, all_units, tiles, i, j
     # Vide la map pour mieux actualiser les hp (anciennement empty_map)
@@ -107,6 +108,7 @@ def attack_possibility(unit_pos, enemy_units, range):
 
 
 def attack_user(char_name, enemy_units):
+    """ interface d'attaque d'une unité par le joueur """
     global all_units, attack_counter
     unit_place = all_units[char_name]['position']
     attack_range = all_units[char_name]['range']
@@ -124,6 +126,7 @@ def attack_user(char_name, enemy_units):
 
 
 def move_user(char_name):
+    """ interface de mouvement d'une unité par joueur """
     global ally_units, all_units
     unit_place = all_units[char_name]['position']
     move_range = all_units[char_name]['move']
@@ -144,3 +147,50 @@ def move_user(char_name):
         int_place = [int(str_place[0]), int(str_place[2])]  # Aie répétition bof
     all_units[char_name]['position'] = int_place
     return 1
+
+
+def user_turn(end_counter, surrender, ally_units, enemy_units):
+    """ correspond à la boucle caractérisant un tour joué par un joueur """
+    global all_units
+    while ally_units:
+        ally_names = [unit[0] for unit in ally_units]
+        # Choix de l'unité :
+        map_actualisation()
+        print("current/available units:", *ally_units, sep=" ")
+        char_name = input("choose unit, skip turn (write skip) or surrender : ")
+        while not ((char_name in ally_names) or (char_name in ["skip", "surrender"])):
+            char_name = input("can't choose unit, choose again : ")
+        if char_name == "skip":
+            ally_units = []
+            break  # Nécessaire pour exécuter le reste de la boucle.
+        elif char_name == "surrender":
+            return 1
+        else:
+            # Choix de l'action :
+            # Variables définissant si l'unité à déjà bougé/attaqué
+            attack_counter = 0
+            move_counter = 0
+        while attack_counter == 0:  # Après avoir attaqué, l'unité ne peut plus rien faire.
+            if move_counter == 0:
+                map_actualisation()
+                action = input("possibility : attack, move, skip : ")
+                while action not in ["attack", "move", "skip"]:
+                    action = input("impossible action, choose again : ")
+                if action == "skip":
+                    attack_counter += 1
+                elif action == "move":
+                    move_counter = move_user(char_name)
+                    map_actualisation()
+                else:  # Cas de l'attaque
+                    attack_counter = attack_user(char_name, enemy_units)
+            else:  # Quand move_counter == 1
+                action = input("possibility: attack, skip : ")
+                while action not in ["attack", "skip"]:
+                    action = input("impossible action, choose again : ")
+                if action == "skip":
+                    attack_counter += 1
+                else:  # Nécessairement attack
+                    attack_counter = attack_user(char_name, enemy_units)
+        # Enlève l'unité des unités jouables :
+        ally_units.remove((char_name, all_units[char_name]['HP']))
+    return 0  # n'a pas surrender
