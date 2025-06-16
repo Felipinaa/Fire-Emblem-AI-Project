@@ -16,6 +16,7 @@ j = max([all_zones[c][1] for c in range(len(all_zones))])+1  # Colonnes
 
 _map = [['__' for lin in range(i)] for col in range(j)]
 
+
 def map_actualisation():
     global _map, all_units
     # Vide la map pour mieux actualiser les hp (anciennement empty_map)
@@ -43,6 +44,7 @@ def map_actualisation():
 
 # En considérant que les unités bleues sont en haut du plateau
 # et les unitées rouges en bas :
+
 
 blue_units = {"b" + str(i):
               {"HP": 3, "position": [0, i], "attack": 1, "move": 1, "range": 1}
@@ -246,3 +248,13 @@ if blue_winner:
     print("Blue won in", nb_turn)
 elif red_winner:
     print("Red won in", nb_turn)
+
+# Transcription des résultats
+
+with open('results.json', 'r+') as f:
+    data = json.load(f)
+    nb_former_game = int([key for key in data.keys()][-1][-1])
+    data['game ' + str(nb_former_game+1)] = [nb_turn, all_units]
+    f.seek(0)
+    json.dump(data, f, indent=4)
+    f.truncate()

@@ -1,0 +1,107 @@
+{
+    "game 1": [
+        1,
+        {
+            "b0": {
+                "HP": 3,
+                "position": [
+                    0,
+                    0
+                ],
+                "attack": 1,
+                "move": 1,
+                "range": 1
+            },
+            "b1": {
+                "HP": 3,
+                "position": [
+                    0,
+                    1
+                ],
+                "attack": 1,
+                "move": 1,
+                "range": 1
+            },
+            "b2": {
+                "HP": 3,
+                "position": [
+                    0,
+                    2
+                ],
+                "attack": 1,
+                "move": 1,
+                "range": 1
+            },
+            "b3": {
+                "HP": 3,
+                "position": [
+                    0,
+                    3
+                ],
+                "attack": 1,
+                "move": 1,
+                "range": 1
+            },
+            "b4": {
+                "HP": 3,
+                "position": [
+                    0,
+                    4
+                ],
+                "attack": 1,
+                "move": 1,
+                "range": 1
+            },
+            "r0": {
+                "HP": 3,
+                "position": [
+                    4,
+                    0
+                ],
+                "attack": 1,
+                "move": 1,
+                "range": 1
+            },
+            "r1": {
+                "HP": 3,
+                "position": [
+                    4,
+                    1
+                ],
+                "attack": 1,
+                "move": 1,
+                "range": 1
+            },
+            "r2": {
+                "HP": 3,
+                "position": [
+                    4,
+                    2
+                ],
+                "attack": 1,
+                "move": 1,
+                "range": 1
+            },
+            "r3": {
+                "HP": 3,
+                "position": [
+                    4,
+                    3
+                ],
+                "attack": 1,
+                "move": 1,
+                "range": 1
+            },
+            "r4": {
+                "HP": 3,
+                "position": [
+                    4,
+                    4
+                ],
+                "attack": 1,
+                "move": 1,
+                "range": 1
+            }
+        }
+    ]
+}
