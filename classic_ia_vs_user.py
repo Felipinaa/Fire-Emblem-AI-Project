@@ -15,9 +15,9 @@ while end_counter != 1:
     # On considère que le joueur joue en premier, donc sur les tours impairs.
     if nb_turn % 2 == 1:
         ally_units = [(unit, blue_units[unit]['HP'])
-                      for unit in blue_units if blue_units[unit]['HP'] != 0]
+                      for unit in blue_units if blue_units[unit]['HP'] > 0]
         enemy_units = [(unit, red_units[unit]['HP'])
-                       for unit in red_units if red_units[unit]['HP'] != 0]
+                       for unit in red_units if red_units[unit]['HP'] > 0]
         surrender = user_turn(ally_units, enemy_units)
     else:
         ally_units = [(unit, red_units[unit]['HP'])

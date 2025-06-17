@@ -24,8 +24,8 @@ with open('units.json', 'r') as file:
     red_units = units["red units"]
     all_units = blue_units | red_units
 
-### Fonctions :
-## Fonctions concernant la carte :
+# --- Fonctions ---
+# -- Fonctions concernant la carte --
 
 
 def map_actualisation():
@@ -40,8 +40,9 @@ def map_actualisation():
                 _map[lin][col] = '//'
     # Actualise le nom des unités sur chaque case
     for unit in all_units:
-        name, pos = unit, all_units[unit]['position']
-        _map[pos[0]][pos[1]] = name
+        if all_units[unit]['HP'] > 0:
+            name, pos = unit, all_units[unit]['position']
+            _map[pos[0]][pos[1]] = name
     # Affiche la map :
     for line in _map:
         print(line)
