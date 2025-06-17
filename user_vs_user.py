@@ -1,15 +1,12 @@
 import json
-# On les importe séparément par souci de clarté/ de différentiation.
-from game_initialisation import red_units, blue_units, all_units, user_turn
+from game_initialisation import red_units, blue_units, all_units
+from user_turn import user_turn
 
 # Déroulement du tour :
 # Initialisation des variables
 
-
 end_counter = 0
 nb_turn = 0
-# On passe par une variable surrender
-# car quitter la boucle avec un break ne change pas les valeurs ?
 surrender = 0
 
 # Boucle principale :
@@ -27,7 +24,7 @@ while end_counter != 1:
                       for unit in red_units if red_units[unit]['HP'] != 0]
         enemy_units = [(unit, blue_units[unit]['HP'])
                        for unit in blue_units if blue_units[unit]['HP'] != 0]
-    surrender = user_turn(end_counter, surrender, ally_units, enemy_units)
+    surrender = user_turn(ally_units, enemy_units)
     # Analyse des HP des unités :
     blue_units_hp = [blue_units[unit]['HP'] for unit in blue_units]
     red_units_hp = [red_units[unit]['HP'] for unit in red_units]
