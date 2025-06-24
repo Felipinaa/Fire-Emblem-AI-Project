@@ -31,11 +31,23 @@ def move_user(char_name, ally_units):
     # On accède à all_units pour véritablement changer les stats de l'unité
     str_place = input(
         "possible places to move (X cases) : ")
-    int_place = [int(str_place[0]), int(str_place[2])]
-    while int_place not in possible_moves:
-        str_place = input("can't move there, choose again : ")
-        int_place = [int(str_place[0]), int(str_place[2])]
-    all_units[char_name]['position'] = int_place
+    try:
+        x_pos, y_pos = int(str_place[0]), int(str_place[2])
+    except ValueError:
+        print("Wrong input : not a position")
+        str_place = input("possible place to move (X cases)")
+    else:
+        int_place = [x_pos, y_pos]
+        print(int_place)
+        while int_place not in possible_moves:
+            str_place = input("can't move there, choose again : ")
+            try:
+                x_pos, y_pos = int(str_place[0]), int(str_place[2])
+            except UnboundLocalError:
+                print("feur")
+            else:
+                int_place = [x_pos, y_pos]
+                all_units[char_name]['position'] = int_place
 
 
 def user_turn(ally_units, enemy_units):

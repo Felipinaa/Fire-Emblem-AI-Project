@@ -47,7 +47,8 @@ def map_actualisation():
     for line in _map:
         print(line)
 
-## Fonctions concernant les actions :
+
+# --Fonctions concernant les actions--
 # Fonctions de check :
 
 
