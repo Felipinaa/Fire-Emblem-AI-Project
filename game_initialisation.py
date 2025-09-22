@@ -22,14 +22,14 @@ with open('units.json', 'r') as file:
     units = json.load(file)
     blue_units = units["blue units"]
     red_units = units["red units"]
-    all_units = blue_units | red_units
+    all_units_beg = blue_units | red_units
 
 # --- Fonctions ---
 # -- Fonctions concernant la carte --
 
 
-def map_actualisation():
-    global _map, all_units, tiles, i, j
+def map_actualisation(all_units):
+    global _map, tiles, i, j
     # Vide la map pour mieux actualiser les hp (anciennement empty_map)
     for lin in range(i):
         for col in range(j):
@@ -40,9 +40,8 @@ def map_actualisation():
                 _map[lin][col] = '//'
     # Actualise le nom des unités sur chaque case
     for unit in all_units:
-        if all_units[unit]['HP'] > 0:
-            name, pos = unit, all_units[unit]['position']
-            _map[pos[0]][pos[1]] = name
+        name, pos = unit, all_units[unit]['position']
+        _map[pos[0]][pos[1]] = name
     # Affiche la map :
     for line in _map:
         print(line)
@@ -56,13 +55,12 @@ def in_bounds(pos):  # Sert à voir si la position existe
     return ((pos[0] >= 0 and pos[0] < i) and (pos[1] >= 0 and pos[1] < j)) and pos not in tiles["blocked zone"]
 
 
-def move_possibility(unit_pos, wideness):
+def move_possibility(unit_pos, wideness, all_units):
     # Contient toutes les positions possibles.
     possible_pos = [unit_pos]
     # File servant à analyser positions où peut aller
     pos_to_check = [unit_pos]
     check_counter = wideness
-    global all_units
     all_units_pos = [all_units[key]["position"] for key in all_units]
     while check_counter > 0:
         pos_to_check_aux = pos_to_check.copy()
@@ -84,8 +82,7 @@ def move_possibility(unit_pos, wideness):
     return possible_pos
 
 
-def attack_possibility(unit_pos, enemy_units, range):
-    global all_units
+def attack_possibility(unit_pos, enemy_units, range, all_units):
     # Très similaire à move possibility
     near_pos = []  # regarde toutes les cases pouvant être atteintes
     pos_to_check = [unit_pos]

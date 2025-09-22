@@ -1,4 +1,3 @@
-from game_initialisation import all_units
 from game_initialisation import move_possibility, attack_possibility
 from math import sqrt
 
@@ -33,7 +32,7 @@ def min_w_ind(L):
         return ind, mini
 
 
-def closest_enemy(pos, enemy_units):
+def closest_enemy(pos, enemy_units, all_units):
     """ trouve l'ennemi le plus proche et renvoie la distance minimale
         par rapport à la position et son nom """
     enemy_positions = [all_units[enemy]['position'] for (enemy, enemy_hp) in enemy_units]
@@ -49,17 +48,17 @@ def optimal_path(m_list, enemy_pos):
     return m_list[min_w_ind(possible_choice)[0]]
 
 
-def classic_ia_turn(ally_units, enemy_units):
+def classic_ia_turn(ally_units, enemy_units, all_units):
     for (unit, unit_hp) in ally_units:
         # Mouvement de l'unité :
         pos = all_units[unit]['position']
-        d_min, enemy = closest_enemy(pos, enemy_units)
-        m_pos = move_possibility(pos, all_units[unit]['move'])
+        d_min, enemy = closest_enemy(pos, enemy_units, all_units)
+        m_pos = move_possibility(pos, all_units[unit]['move'], all_units)
         choice = optimal_path(m_pos, all_units[enemy]['position'])
         all_units[unit]['position'] = choice  # Bouge l'unité
         # Attaque de l'unité :
         pos = all_units[unit]['position']  # Update la position de l'unité
-        possible_enemy = attack_possibility(pos, enemy_units, all_units[unit]['range'])
+        possible_enemy = attack_possibility(pos, enemy_units, all_units[unit]['range'], all_units)
         enemy_hp = [enemy[1] for enemy in possible_enemy]
         if enemy_hp:
             lowest_hp_enemy = possible_enemy[min_w_ind(enemy_hp)[0]][0]

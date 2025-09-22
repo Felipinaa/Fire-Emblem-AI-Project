@@ -1,5 +1,5 @@
 import json
-from game_initialisation import red_units, blue_units, all_units
+from game_initialisation import red_units, blue_units, all_units_beg
 from user_turn import user_turn
 from classic_ia_turn import classic_ia_turn
 
@@ -8,23 +8,23 @@ from classic_ia_turn import classic_ia_turn
 end_counter = 0
 surrender = 0
 nb_turn = 0
-
+all_units = all_units_beg.copy()
 
 while end_counter != 1:
     nb_turn += 1
+    # Actualise avec les unitées vivantes
+    for unit in all_units_beg:
+        if unit in all_units.keys() and all_units[unit]["HP"] <= 0:
+            all_units.pop(unit)
+    blue_userformat_units = [(unit, blue_units[unit]['HP'])
+                             for unit in blue_units if blue_units[unit]['HP'] > 0]
+    red_userformat_units = [(unit, red_units[unit]['HP'])
+                            for unit in red_units if red_units[unit]['HP'] > 0]
     # On considère que le joueur joue en premier, donc sur les tours impairs.
     if nb_turn % 2 == 1:
-        ally_units = [(unit, blue_units[unit]['HP'])
-                      for unit in blue_units if blue_units[unit]['HP'] > 0]
-        enemy_units = [(unit, red_units[unit]['HP'])
-                       for unit in red_units if red_units[unit]['HP'] > 0]
-        surrender = user_turn(ally_units, enemy_units)
+        surrender = user_turn(blue_userformat_units, red_userformat_units, all_units)
     else:
-        ally_units = [(unit, red_units[unit]['HP'])
-                      for unit in red_units if red_units[unit]['HP'] != 0]
-        enemy_units = [(unit, blue_units[unit]['HP'])
-                       for unit in blue_units if blue_units[unit]['HP'] != 0]
-        classic_ia_turn(ally_units, enemy_units)
+        classic_ia_turn(red_userformat_units, blue_userformat_units, all_units)
     # Analyse des HP des unités :
     blue_units_hp = [blue_units[unit]['HP'] for unit in blue_units]
     red_units_hp = [red_units[unit]['HP'] for unit in red_units]
@@ -50,7 +50,7 @@ else:
 with open('results.json', 'r+') as f:
     data = json.load(f)
     nb_former_game = int([key for key in data.keys()][-1][-1])
-    data['game ' + str(nb_former_game+1)] = [nb_turn, all_units]
+    data['game ' + str(nb_former_game+1)] = [nb_turn, all_units]  # Peut être retiré all_units_deb
     f.seek(0)
     json.dump(data, f, indent=4)
     f.truncate()
